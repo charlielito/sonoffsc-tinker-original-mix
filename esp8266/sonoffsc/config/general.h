@@ -37,10 +37,10 @@
 // MQTT
 // -----------------------------------------------------------------------------
 
-#define MQTT_SERVER             "m11.cloudmqtt.com"
-#define MQTT_PORT               16261
-#define MQTT_USER               "yzumqibq"
-#define MQTT_PASSWORD           "RJZJ3tFaIHs9"
+#define MQTT_SERVER             "a1ud2nqx6i62qf.iot.us-east-2.amazonaws.com"
+#define MQTT_PORT               443
+#define MQTT_USER               ""
+#define MQTT_PASSWORD           ""
 #define MQTT_RETAIN             true
 #define MQTT_QOS                0
 #define MQTT_KEEPALIVE          30

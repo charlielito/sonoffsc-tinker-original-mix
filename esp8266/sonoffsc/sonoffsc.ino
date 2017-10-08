@@ -29,6 +29,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <AsyncMqttClient.h>
 #include <ArduinoJson.h>
 
+// NEW APP_WEBSITE
+#include <AmazonIOTClient.h>
+#include <ESP8266AWSImplementations.h>
+
+#include <EEPROM.h> //library to handle with permament data after turning off Device
+#include "ESP8266TrueRandom.h"
+
+
+Esp8266HttpClient httpClient;
+Esp8266DateTimeProvider dateTimeProvider;
+
+AmazonIOTClient iotClient;
+ActionError actionError;
+
+char shadow[100];
+//
+
 
 void mqttRegister(void (*callback)(unsigned int, const char *, const char *));
 template<typename T> bool setSetting(const String& key, T value);
@@ -40,6 +57,20 @@ template<typename T> void domoticzSend(const char * setting, T value);
 // -----------------------------------------------------------------------------
 // METHODS
 // -----------------------------------------------------------------------------
+
+void initAWS()
+{
+  iotClient.setAWSRegion("us-east-2");
+  iotClient.setAWSEndpoint("amazonaws.com");
+  iotClient.setAWSDomain("a1ud2nqx6i62qf.iot.us-east-2.amazonaws.com");
+  iotClient.setAWSPath("/things/iotBemo/shadow");
+  iotClient.setAWSKeyID("AKIAISLB53XWR6LH266Q");
+  iotClient.setAWSSecretKey("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");
+  iotClient.setHttpClient(&httpClient);
+  iotClient.setDateTimeProvider(&dateTimeProvider);
+}
+
+
 
 String getIdentifier() {
     char identifier[20];
@@ -101,6 +132,7 @@ void hardwareLoop() {
 
 }
 
+
 // -----------------------------------------------------------------------------
 // BOOTING
 // -----------------------------------------------------------------------------
@@ -131,6 +163,8 @@ void welcome() {
 
 }
 
+
+
 void setup() {
 
     Serial.begin(19200);
@@ -150,7 +184,7 @@ void setup() {
     DEBUG_MSG("otaSetup()");
     otaSetup();
     DEBUG_MSG("mqttSetup()");
-    mqttSetup();
+    // mqttSetup();
     DEBUG_MSG("webSetup()");
     webSetup();
     DEBUG_MSG("commsSetup()");
@@ -158,9 +192,9 @@ void setup() {
     DEBUG_MSG("fauxmoSetup()");
     fauxmoSetup();
     DEBUG_MSG("commConfigure()");
-	  commConfigure();
+	  // commConfigure();
 
-
+    initAWS();
 
 	mqttRegister(mqttCallback);
 }
@@ -172,10 +206,12 @@ void loop() {
 
     readUart();
 
+
+
     buttonLoop();
     wifiLoop();
     otaLoop();
-    mqttLoop();
+    // mqttLoop();
     fauxmoLoop();
 
 }
@@ -183,7 +219,7 @@ void loop() {
 
 
 
-void readUart(void)
+String readUart(void)
 {
     static bool get_at_flag = false;
     static String rec_string = "";
@@ -224,11 +260,14 @@ void readUart(void)
           int light   = root["light"];
           DEBUG_MSG("UPDATE! %s", msg.c_str());
           DEBUG_MSG("Data: %d %d %d %d %d", humidity, temp, noise, dust, light);
-          mqttSend(getSetting("mqttTopicTemp", MQTT_TEMPERATURE_TOPIC).c_str(), temp);
-          mqttSend(getSetting("mqttTopicHum", MQTT_HUMIDITY_TOPIC).c_str(), humidity);
-          mqttSend(getSetting("mqttTopicLight", MQTT_LIGHT_TOPIC).c_str(), light);
-          mqttSend(getSetting("mqttTopicDust", MQTT_DUST_TOPIC).c_str(), dust);
-          mqttSend(getSetting("mqttTopicNoise", MQTT_NOISE_TOPIC).c_str(), noise);
+
+          long mem = ESP.getFreeHeap();
+          DEBUG_MSG("freeMemory()= %d", mem);
+
+          strcpy(shadow, ("{\"state\":{\"reported\":{\"test_value1\":66, \"test_value2\":666}} }"));
+          char* result = iotClient.update_shadow(shadow, actionError);
+          DEBUG_MSG("Message: %s", result);
+
         }
         else
         {
@@ -244,4 +283,26 @@ void readUart(void)
     {
         /*do nothing*/
     }
+}
+
+
+void awsloop()
+{
+  long mem = ESP.getFreeHeap();
+  Serial.print("freeMemory()=");
+    Serial.println(mem);
+
+
+  // strcpy(shadow, ("{\"state\":{\"reported\":{\"test_value1\":66, \"test_value2\":666}}, \"id_\": \""+ clientID + "\" }").c_str());
+  strcpy(shadow, ("{\"state\":{\"reported\":{\"test_value1\":66, \"test_value2\":666}} }"));
+
+  Serial.println("Trying to send data");
+  Serial.print(shadow);
+
+  char* result = iotClient.update_shadow(shadow, actionError);
+  Serial.print(result);
+
+  delete[] result;
+
+  delay(10000);
 }
