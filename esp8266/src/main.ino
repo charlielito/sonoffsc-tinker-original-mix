@@ -14,8 +14,19 @@ Esp8266DateTimeProvider dateTimeProvider;
 AmazonIOTClient iotClient;
 ActionError actionError;
 
+// Your WIFI Setttings
 const char* ssid = "Andres7";
 const char* password = "99999999";
+
+// Your IAM credentials
+const char* AWSKeyID = "AKIAISLB53XWR6LH266Q";
+const char* AWSSecretKey = "N12kNqd9QFX0AqopLlJEogHXiz+17o5Eqm2UfV7p";
+
+const char* AWSPath = "/things/iotBemo/shadow";
+const char* AWSDomain = "a1ud2nqx6i62qf.iot.us-east-2.amazonaws.com";
+const char* AWSRegion = "us-east-2";
+
+
 char shadow[800];
 
 
@@ -139,12 +150,12 @@ void initWLAN()
 
 void initAWS()
 {
-  iotClient.setAWSRegion("us-east-2");
+  iotClient.setAWSRegion(AWSRegion);
   iotClient.setAWSEndpoint("amazonaws.com");
-  iotClient.setAWSDomain("a1ud2nqx6i62qf.iot.us-east-2.amazonaws.com");
-  iotClient.setAWSPath("/things/iotBemo/shadow");
-  iotClient.setAWSKeyID("AKIAISLB53XWR6LH266Q");
-  iotClient.setAWSSecretKey("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");
+  iotClient.setAWSDomain(AWSDomain);
+  iotClient.setAWSPath(AWSPath );
+  iotClient.setAWSKeyID(AWSKeyID);
+  iotClient.setAWSSecretKey(AWSSecretKey);
   iotClient.setHttpClient(&httpClient);
   iotClient.setDateTimeProvider(&dateTimeProvider);
 }
