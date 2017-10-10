@@ -5,7 +5,6 @@
 #include <ESP8266AWSImplementations.h>
 
 #include <EEPROM.h> //library to handle with permament data after turning off Device
-#include "ESP8266TrueRandom.h"
 
 #include <ArduinoJson.h>
 
@@ -18,14 +17,10 @@ ActionError actionError;
 const char* ssid = "Andres7";
 const char* password = "99999999";
 char shadow[800];
-String clientID;
-byte uuidNumber[16];
+
 
 String chip_id;
 
-String ID_DELIMETER = "node-";
-
-int UUIDLEN = 36 + ID_DELIMETER.length();
 
 
 String read_eeprom(int index, int len){
@@ -40,23 +35,6 @@ void write_eeprom(uint32_t address, String str){
   for (int i = 0; i < str.length(); i++)
       EEPROM.write(address+i, str.charAt(i));
   EEPROM.commit();
-}
-
-String get_clientId(){
-  Serial.print("Getting ID: ");
-  String str = read_eeprom(0,UUIDLEN);
-  Serial.println(str);
-  if (str.substring(0,ID_DELIMETER.length()) == ID_DELIMETER)
-    Serial.println("Already ID");
-  else{
-    Serial.println("need to generate ID");
-    ESP8266TrueRandom.uuid(uuidNumber);
-    str = ID_DELIMETER + ESP8266TrueRandom.uuidToString(uuidNumber);
-    Serial.println("ID: " + str);
-    write_eeprom(0,str);
-    Serial.println("ID (in memory): " +read_eeprom(0,UUIDLEN));
-  }
-  return str;
 }
 
 
@@ -194,20 +172,7 @@ void loop()
   // Serial.print("freeMemory()=");
   //   Serial.println(mem);
 
-
-  // // strcpy(shadow, ("{\"state\":{\"reported\":{\"test_value1\":66, \"test_value2\":666}}, \"id_\": \""+ clientID + "\" }").c_str());
-  // strcpy(shadow, ("{\"state\":{\"reported\":{\"humidity\":16, \"light\":10, \"temperature\":25, \"noise\":1, \"dusty\":1}} }"));
-  //
-  // Serial.println("Trying to send data");
-  // Serial.print(shadow);
-  //
-  // char* result = iotClient.update_shadow(shadow, actionError);
-  // Serial.print(result);
-  //
-  // delete[] result;
-
   readUart();
-
 
   // Serial.printf ("ESP8266 Chip id =%08X \n", ESP.getChipId ());
   // Serial.printf ("ESP8266 Chip id =%s \n", id.c_str());
