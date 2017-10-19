@@ -15,8 +15,8 @@ AmazonIOTClient iotClient;
 ActionError actionError;
 
 // Your WIFI Setttings
-const char* ssid = "Andres7";
-const char* password = "99999999";
+const char* ssid = "Time_machine";
+const char* password = "P66988165r";
 
 // Your IAM credentials
 const char* AWSKeyID = "AKIAISLB53XWR6LH266Q";
