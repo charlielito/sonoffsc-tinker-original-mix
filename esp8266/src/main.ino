@@ -32,8 +32,8 @@
 
 //  --------- Config ---------- //
 //AWS IOT config, change these:
-char wifi_ssid[]       = "Ch";
-char wifi_password[]   = "kiwicampus0";
+char wifi_ssid[]       = "Time_machine"
+char wifi_password[]   = "P66988165r"
 char aws_endpoint[]    = "a1ud2nqx6i62qf.iot.us-east-2.amazonaws.com";
 char aws_key[]         = "AKIAISLB53XWR6LH266Q";
 char aws_secret[]      = "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";
@@ -306,7 +306,7 @@ void setup() {
     Serial.println ("connecting to wifi");
     while(WiFiMulti.run() != WL_CONNECTED) {
         digitalWrite(LED_PIN, HIGH);
-        delay(100);
+        delay(500);
         digitalWrite(LED_PIN, LOW);
         Serial.print (".");
     }
