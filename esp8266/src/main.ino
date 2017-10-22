@@ -34,7 +34,7 @@
 
 //  --------- Config ---------- //
 //AWS IOT config, change these:
-char wifi_ssid[]       = "kiwibot0";
+char wifi_ssid[]       = "Ch";
 char wifi_password[]   = "kiwicampus0";
 char aws_endpoint[]    = "a1ud2nqx6i62qf.iot.us-east-2.amazonaws.com";
 char aws_key[]         = "AKIAISLB53XWR6LH266Q";
@@ -305,6 +305,10 @@ void setup() {
     configTime(3 * 3600, 0, "pool.ntp.org", "time.nist.gov");
 
 
+    long ID = ESP.getChipId();
+    chip_id = String(ID, HEX);
+    Serial.println(chip_id.c_str());
+
     //fill AWS parameters
     awsWSclient.setAWSRegion(aws_region);
     awsWSclient.setAWSDomain(aws_endpoint);
@@ -314,7 +318,7 @@ void setup() {
 
     if (connect ()){
       subscribe ();
-      sendmessage ();
+      // sendmessage ();
     }
 
 }
