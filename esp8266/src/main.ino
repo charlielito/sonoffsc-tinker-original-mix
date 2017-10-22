@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <Stream.h>
-
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 
@@ -18,18 +17,17 @@
 #include <Countdown.h>
 #include <MQTTClient.h>
 
-
 //AWS MQTT Websocket
 #include "Client.h"
 #include "AWSWebSocketClient.h"
 #include "CircularByteBuffer.h"
 
-
-
 #include <EEPROM.h> //library to handle with permament data after turning off Device
 
 #include <ArduinoJson.h>
 
+#define BUTTON_PIN 0
+#define LED_PIN 13
 
 
 //  --------- Config ---------- //
@@ -162,6 +160,14 @@ void readUart(void)
           message.payloadlen = strlen(shadow)+1;
           int rc = client->publish(aws_topic, message);
 
+          digitalWrite(LED_PIN, HIGH);
+          delay(200);
+          digitalWrite(LED_PIN, LOW);
+          delay(200);
+          digitalWrite(LED_PIN, HIGH);
+          delay(200);
+          digitalWrite(LED_PIN, LOW);
+
           // delay(5000);
           // DEBUG_MSG("Message: %s", result);
 
@@ -290,6 +296,8 @@ void sendmessage () {
 
 void setup() {
     Serial.begin (19200);
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, LOW);
     delay (2000);
     Serial.setDebugOutput(1);
 
@@ -297,7 +305,9 @@ void setup() {
     WiFiMulti.addAP(wifi_ssid, wifi_password);
     Serial.println ("connecting to wifi");
     while(WiFiMulti.run() != WL_CONNECTED) {
+        digitalWrite(LED_PIN, HIGH);
         delay(100);
+        digitalWrite(LED_PIN, LOW);
         Serial.print (".");
     }
     Serial.println ("\nconnected");
