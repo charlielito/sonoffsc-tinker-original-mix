@@ -9,11 +9,11 @@
 
 //WEBSockets
 #include <Hash.h>
-#include <WebSocketsClient.h>
+#include <WebSocketsClient.h> //
 
 //MQTT PAHO
 #include <SPI.h>
-#include <IPStack.h>
+#include <IPStack.h> // paho
 #include <Countdown.h>
 #include <MQTTClient.h>
 
@@ -32,8 +32,8 @@
 
 //  --------- Config ---------- //
 //AWS IOT config, change these:
-char wifi_ssid[]       = "Time_machine"
-char wifi_password[]   = "P66988165r"
+char wifi_ssid[]       = "Time_machine";
+char wifi_password[]   = "P66988165r";
 char aws_endpoint[]    = "a1ud2nqx6i62qf.iot.us-east-2.amazonaws.com";
 char aws_key[]         = "AKIAISLB53XWR6LH266Q";
 char aws_secret[]      = "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";
