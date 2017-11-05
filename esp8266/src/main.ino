@@ -32,13 +32,13 @@
 
 //  --------- Config ---------- //
 //AWS IOT config, change these:
-char wifi_ssid[]       = "Time_machine";
-char wifi_password[]   = "P66988165r";
-char aws_endpoint[]    = "a1ud2nqx6i62qf.iot.us-east-2.amazonaws.com";
-char aws_key[]         = "AKIAISLB53XWR6LH266Q";
-char aws_secret[]      = "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";
-char aws_region[]      = "us-east-2";
-const char* aws_topic  = "$aws/things/iotBemo/shadow/update";
+char wifi_ssid[]       = "kiwibot1";
+char wifi_password[]   = "kiwicampus1";
+char aws_endpoint[]    = "a1ud2nqx6i62qf.iot.us-east-1.amazonaws.com";
+char aws_key[]         = "XXXXXXXXXXXXXXXXX";
+char aws_secret[]      = "XXXXXXXXXXXXXXXXX";
+char aws_region[]      = "us-east-1";
+const char* aws_topic  = "$aws/things/Sensor1/shadow/update";
 int port = 443;
 
 //MQTT config
@@ -113,13 +113,22 @@ void readUart(void)
       // DEBUG_MSG("Read: %s", rec_string.c_str());
         if(-1 != (index1 = rec_string.indexOf("AT+STATUS?")))
         {
+          delay(1000);
           Serial.write("AT+STATUS=4");
         // DEBUG_MSG("Send status=4");
         }
         else if (-1 != (index1 = rec_string.indexOf("AT+UPDATE")))
         {
+          delay(1000);
           Serial.write("AT+SEND=ok");
-          String msg = "{"+rec_string.substring(10,rec_string.length()-1)+"}";
+
+          String check_str = rec_string.substring(15,rec_string.length()-1);
+          int index = rec_string.lastIndexOf("AT+UPDATE");
+          // if (-1 != index) index = rec_string.indexOf("AT+UPDATE");
+          // Serial.println(index);
+
+
+          String msg = "{"+rec_string.substring(index+10,rec_string.length()-1)+"}";
           JsonObject& root = jsonBuffer.parseObject(msg.c_str());
           int humidity = root["humidity"];
           double temp  = 1.8*double(root["temperature"])+32;
@@ -127,7 +136,7 @@ void readUart(void)
           int dust   = root["dusty"];
           int light   = root["light"];
 
-          Serial.println("UPDATE! " + msg);
+          // Serial.println("UPDATE! " + msg);
           // DEBUG_MSG("Data: %d %d %d %d %d", humidity, temp, noise, dust, light);
 
           String config_msg =  "\"config\": {\"bemo_type\": \"bemo-test\", \"version\": \"0.0.1\", \"iotname\": \"esp8266_"+chip_id+"\" }";
@@ -195,21 +204,21 @@ void readUart(void)
 void messageArrived(MQTT::MessageData& md)
 {
   MQTT::Message &message = md.message;
-
-  Serial.print("Message ");
-  Serial.print(++arrivedcount);
-  Serial.print(" arrived: qos ");
-  Serial.print(message.qos);
-  Serial.print(", retained ");
-  Serial.print(message.retained);
-  Serial.print(", dup ");
-  Serial.print(message.dup);
-  Serial.print(", packetid ");
-  Serial.println(message.id);
-  Serial.print("Payload ");
+  //
+  // Serial.print("Message ");
+  // Serial.print(++arrivedcount);
+  // Serial.print(" arrived: qos ");
+  // Serial.print(message.qos);
+  // Serial.print(", retained ");
+  // Serial.print(message.retained);
+  // Serial.print(", dup ");
+  // Serial.print(message.dup);
+  // Serial.print(", packetid ");
+  // Serial.println(message.id);
+  // Serial.print("Payload ");
   char* msg = new char[message.payloadlen+1]();
   memcpy (msg,message.payload,message.payloadlen);
-  Serial.println(msg);
+  // Serial.println(msg);
   delete msg;
 }
 
@@ -303,7 +312,7 @@ void setup() {
 
     //fill with ssid and wifi password
     WiFiMulti.addAP(wifi_ssid, wifi_password);
-    Serial.println ("connecting to wifi");
+      Serial.println ("connecting to wifi");
     while(WiFiMulti.run() != WL_CONNECTED) {
         digitalWrite(LED_PIN, HIGH);
         delay(500);
@@ -346,6 +355,6 @@ void loop() {
     }
   }
 
-  delay(5000);
+  delay(1000);
 
 }
